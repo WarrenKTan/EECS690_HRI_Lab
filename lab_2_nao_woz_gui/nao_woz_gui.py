@@ -1,17 +1,20 @@
 import tkinter as tk
-# import qi
+import qi, math
 
 
 # services. loaded in connectNao
+session = None
 tts_service = None
 motion_service = None
 posture_service = None
 audio_service = None
 leds_service = None
 
+# main window with three panels
+# region
 root = tk.Tk()
 root.title("NAO HRI Control Panel")
-root.geometry("600x800")
+root.geometry("700x400")
 
 # row grid (3)
 for i in range(3):
@@ -59,9 +62,18 @@ panel3.grid(
     column=0,
     sticky="nsew"
 )
+# endregion
 
 # connect to Nao
-def connectNao(naoIP = "11.111.11.111"):
+def connectNao(naoIP):
+    # global variables
+    global session
+    global tts_service
+    global motion_service
+    global posture_service
+    global audio_service
+    global leds_service
+
     try:
         session = qi.Session()
         print(f"Connecting to NAO at {naoIP}:9559...")
@@ -85,8 +97,13 @@ def connectNao(naoIP = "11.111.11.111"):
         return False
 
     # executed properly
+    audio_service.setOutputVolume(60)
+    leds_service.fadeRGB("FaceLeds", 0x0000FF, 0.5)
+    tts_service.say("Connected to Nao")
+    posture_service.goToPosture("Sit", 0.5)
     return True
 
+# connection to Nao
 def fillPanel1(panel = panel1):
     # horizontally aligned frame
     frame = tk.Frame(panel)
@@ -144,6 +161,7 @@ def fillPanel1(panel = panel1):
             padx=5
         )
 
+# built-in and/or custom speech
 def fillPanel2(panel = panel2):
     # horizontally aligned frame
     frame0 = tk.Frame(panel)
@@ -164,28 +182,28 @@ def fillPanel2(panel = panel2):
         frame1,
         text="Greeting",
         # replace with function
-        command=lambda: print(f"Hello! My name is Nao!")
+        command=lambda: tts_service.say(f"Hello! My name is Nao!")
     )
 
     instructionButton = tk.Button(
         frame1,
         text="Instructions",
         # replace with function
-        command=lambda: print(f"To perform the Three Good Things exercise, we can discuss three good things from your day. Let's try it out!")
+        command=lambda: tts_service.say(f"To perform the Three Good Things exercise, we can discuss three good things from your day. Let's try it out!")
     )
 
     exampleButton = tk.Button(
         frame1,
         text="Example",
         # replace with function
-        command=lambda: print(f"I'll start first. Today, I was fully charged, had my motors cleaned, and got to chat with my creators. Now you try.")
+        command=lambda: tts_service.say(f"I'll start first. Today, I was fully charged, had my motors cleaned, and got to chat with my creators. Now you try.")
     )
 
     farewellButton = tk.Button(
         frame1,
         text="Farewell",
         # replace with function
-        command=lambda: print(f"Thank you for your participation. Have a good day!")
+        command=lambda: tts_service.say(f"Thank you for your participation. Have a good day!")
     )
 
     frame1_objects = [greetButton, instructionButton, exampleButton, farewellButton]
@@ -213,7 +231,7 @@ def fillPanel2(panel = panel2):
         text="Send Speech",
         bg="#2196f3",
         # replace with connection function
-        command=lambda: print(f"{textInput.get()}")
+        command=lambda: tts_service.say(f"{textInput.get()}")
     )
 
     objects = [textBox2, textInput, submitButton]
@@ -226,61 +244,51 @@ def fillPanel2(panel = panel2):
             padx=5
         )
 
+# robot movement, LEDs, or actions
 def fillPanel3(panel = panel3):
     # create sections
     # region
-    # Create three horizontal sections
     section1 = tk.Frame(panel, bd=1, relief="solid")
     section2 = tk.Frame(panel, bd=1, relief="solid")
     section3 = tk.Frame(panel, bd=1, relief="solid")
 
     # pack sections
     sections = [section1, section2, section3]
-    # pack all
     for _, object in enumerate(sections):
         object.pack(
             side="left",
             fill="both",
             expand=True
         )
-    
-
-    # endregion
-
-    # pack sections
-    # region
-    # Put sections next to each other
-    section1.pack(side="left", fill="both", expand=True)
-    section2.pack(side="left", fill="both", expand=True)
-    section3.pack(side="left", fill="both", expand=True)
 
     # endregion
 
     # create and pack section 1 buttons
     # region
-    # Section 1 buttons
-    button1_1 = tk.Button(section1, text="Button 1")
-    button1_2 = tk.Button(section1, text="Button 2")
+    def nodHead():
+        motion_service.setAngles("HeadPitch", math.radians(15), 0.1)
+        motion_service.setAngles("HeadPitch", math.radians(0), 0.1)
 
-    for button in [button1_1, button1_2]:
+    button1_1 = tk.Button(section1, text="Nod Head", command=nodHead)
+
+    for button in [button1_1]:
         button.pack(fill="x", padx=5, pady=5)
 
     # endregion
     
     # create and pack section 2 buttons
     # region
-    # Section 2 buttons
-    button2_1 = tk.Button(section2, text="Blue", command=lambda: leds_service.fadeRGB("FaceLeds", 0x0000FF, 0.5))
-    button2_2 = tk.Button(section2, text="Green", command=lambda: leds_service.fadeRGB("FaceLeds", 0x00FF00, 0.5))
+    button2_1 = tk.Button(section2, text="Blue", bg="#30c7c2", command=lambda: leds_service.fadeRGB("FaceLeds", 0x0000FF, 0.5))
+    button2_2 = tk.Button(section2, text="Green", bg="#30c73c", command=lambda: leds_service.fadeRGB("FaceLeds", 0x00FF00, 0.5))
+    button2_3 = tk.Button(section2, text="Red", bg="#bf342a", command=lambda: leds_service.fadeRGB("FaceLeds", 0xFF0000, 0.5))
 
-    for button in [button2_1, button2_2]:
+    for button in [button2_1, button2_2, button2_3]:
         button.pack(fill="x", padx=5, pady=5)
 
     # endregion
 
     # create and pack section 3 buttons
     # region
-    # Section 3 buttons
     button3_1 = tk.Button(section3, text="Sit", command=lambda: posture_service.goToPosture("Sit", 0.5))
     button3_2 = tk.Button(section3, text="Stand", command=lambda: posture_service.goToPosture("Stand", 0.5))
 
