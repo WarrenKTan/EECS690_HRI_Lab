@@ -144,7 +144,7 @@ class NaoProxy:
 
 #a class to handle OpenAI API interactions, including Whisper for transcription, GPT-5-nano for text generation, and TTS for speech synthesis
 class OpenAIHandler:
-    def __init__(self, robot_ip, system_prompt_path="system_prompt.txt", robot_user="nao", robot_pass="nao"):
+    def __init__(self, robot_ip, system_prompt_path="three_good_things_system_instruction.txt", robot_user="nao", robot_pass="nao"):
         self.client = OpenAI()
         self.robot_ip = robot_ip
         self.robot_user = robot_user
