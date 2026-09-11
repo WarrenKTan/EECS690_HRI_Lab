@@ -1,0 +1,11 @@
+your GUI library
+I chose the tkinter GUI library because it was the most readily available and the example panel was created from it.
+
+advantages
+tkinter was readily available, which meant I didn't have to worry about dependencies throughout the lab. 
+
+disadvantages
+learning how to create a panel and frames was the most difficult part of this lab. I do not have any experience with other GUI libraries, so I cannot define what disadvantages tkinter may have.
+
+generative AI tool usage
+I used ChatGPT to give me a basic rundown of how panels and frames work so I can organise the buttons. Afterwards, I had it create template code from my instructions of a basic layout.
