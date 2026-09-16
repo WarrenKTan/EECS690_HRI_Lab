@@ -115,6 +115,16 @@ class NaoProxy:
                 self.animate.startBehavior("animations/Stand/BodyTalk/Listening/Listening_2")
             elif expressionName=="happy":
                 self.animate.startBehavior("animations/Stand/Gestures/Enthusiastic_1")
+            elif expressionName=="great":
+                self.animate.startBehavior("animations/Stand/Gestures/Great_1")
+            elif expressionName=="thinking":
+                self.animate.startBehavior("animations/Stand/Gestures/Thinking_3")
+            elif expressionName=="confusion":
+                self.animate.startBehavior("animations/Stand/Gestures/WhatSThis_2")
+            elif expressionName=="joy":
+                self.animate.startBehavior("animations/Stand/Gestures/Joy_1")
+            elif expressionName=="applause":
+                self.animate.startBehavior("animations/Stand/Gestures/Applause_1")
         else:
             print("[Mock Expression change]: Start")
 
@@ -137,7 +147,7 @@ class NaoProxy:
         if self.audio_player and self.audio_device:
             self.audio_device.setOutputVolume(75)
             self.audio_player.playFile(path, 1, 0)
-            self.audio_device.setOutputVolume(55)
+            self.audio_device.setOutputVolume(65)
         else:
             print(f"[Mock AudioPlayer]: Playing {path}")
 
@@ -194,7 +204,7 @@ class OpenAIHandler:
         print("Generating speech audio via OpenAI TTS...")
         with self.client.audio.speech.with_streaming_response.create(
             model="tts-1",
-            voice="sage", #students should experiment with different voices
+            voice="echo", #students should experiment with different voices
             input=reply
         ) as response:
             response.stream_to_file(local_speech_path)
